@@ -100,6 +100,7 @@ class Router extends React.Component{
           name: track.name ? he.decode(track.name) : undefined,
         }))
         gpxInfo = tracks[0]
+        console.log('gpxInfo:', gpxInfo)
         isLoading = false
         this.changeState({current: 'ShowingResult'})
       }
