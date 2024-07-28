@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import Loader from './Loader.js'
+import SvgShower from './SvgShower.js'
 import GPXParser from 'gpxparser';
 import he from 'he';
 
@@ -55,16 +56,18 @@ class Router extends React.Component{
     } else {
       if(this.state.current === 'ShowingResult') {
         return (
-          <div>ECCOLO!</div>
+          <div>
+            <SvgShower path="M 0,0 12.51,9.506 36.266,27.556 19.41,44.234 30.894,51.093 24.332,62.079 -1.33,46.752 16.787,28.828 4.768,19.695 -22.838,-1.281 l 3.863,-11.493 39.063,-0.047 11.232,-0.014 -6.884,-14.355 11.539,-5.534 15.663,32.662 -31.535,0.038 z" handleBack={() => this.changeState({current: 'LoadGpx'})}/>
+          </div>
         )
       } else if(this.state.current === 'LoadGpx') {
         return (
           <div className="translate-y">
-            <div className="margin-or">
-              <p className="p-or p-login-or-size">CONVERT TO SVG</p>
+            <div className="margin-20">
+              <p className="p-color-text-primary p-size">CONVERT TO SVG</p>
             </div>
-            <div className="button-login justify-center-column" onClick={() => this.loadGPX()}>
-              <p className="p-login p-login-or-size">LOAD A GPX</p>
+            <div className="button-primary justify-center-column" onClick={() => this.loadGPX()}>
+              <p className="p-login p-size">LOAD A GPX</p>
               <input id="gpxInput" type="file" accept=".gpx" style={{display: 'none'}} onChange={this.processGPX} />
             </div>
           </div>
