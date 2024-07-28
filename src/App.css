@@ -102,12 +102,16 @@ p {
   margin: 10px 0px;
 }
 .dimention-svg{
-  width: 1000px;
-  height: 1000px;
+  width: 600px;
+  height: 600px;
 }
 .horizontal-elements{
   display: flex;
   flex-direction: row;
+}
+/* .dimention-svg{
+  width: 1000px;
+  height: 1000px;
 }
 @media print, screen and (max-height: 1200px) {
   .dimention-svg{
@@ -132,4 +136,4 @@ p {
     width: 600px;
     height: 600px;
   }
-}
+} */

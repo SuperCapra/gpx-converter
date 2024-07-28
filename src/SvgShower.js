@@ -4,7 +4,7 @@ import {ReactComponent as ArrowDown} from './arrowDownSimplified.svg'
 
 function SvgShower(props) {
 
-    const {path, handleBack} = props
+    const {path, width, height, handleBack} = props
     const svgRef = useRef(null);
 
     const downloadSVG = () => {
@@ -24,8 +24,8 @@ function SvgShower(props) {
   
     return(
         <div className="scaled-to-height">
-            <div className="back-button" onClick={() => handleBack()}>
-                <div className="horizontal-elements">
+            <div className="back-button">
+                <div className="horizontal-elements" onClick={() => handleBack()}>
                     <ArrowDown className="back-image"/>
                     <p className="p-back">BACK</p>
                 </div>
@@ -34,8 +34,8 @@ function SvgShower(props) {
                 </div>
             </div>
             <div className="bordered-div margin-div">
-                <svg ref={svgRef} className="dimention-svg">
-                    <path d={props.path}/>
+                <svg ref={svgRef} width={width} height={height}>
+                    <path d={path} stroke="black" strokeWidth="1" fill="none"/>
                 </svg>
             </div>
         </div>

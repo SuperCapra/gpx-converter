@@ -10,6 +10,8 @@ let isLoading = false
 let state = 'LoadGpx'
 let stateHistory = ['LoadGpx']
 let states = ['LoadGpx','Converting','ShowingResult']
+let width = 600
+let height = width
 
 function App() {
   return (
@@ -57,7 +59,7 @@ class Router extends React.Component{
       if(this.state.current === 'ShowingResult') {
         return (
           <div>
-            <SvgShower path="M 0,0 12.51,9.506 36.266,27.556 19.41,44.234 30.894,51.093 24.332,62.079 -1.33,46.752 16.787,28.828 4.768,19.695 -22.838,-1.281 l 3.863,-11.493 39.063,-0.047 11.232,-0.014 -6.884,-14.355 11.539,-5.534 15.663,32.662 -31.535,0.038 z" handleBack={() => this.changeState({current: 'LoadGpx'})}/>
+            <SvgShower width={width} height={height} path={gpxInfo.path} handleBack={() => this.changeState({current: 'LoadGpx'})}/>
           </div>
         )
       } else if(this.state.current === 'LoadGpx') {
@@ -103,12 +105,54 @@ class Router extends React.Component{
           name: track.name ? he.decode(track.name) : undefined,
         }))
         gpxInfo = tracks[0]
+        this.normalizeCoordinates(gpxInfo.coordinates)
+        gpxInfo['path'] = this.getPath(this.normalizeCoordinates(gpxInfo.coordinates))
         console.log('gpxInfo:', gpxInfo)
         isLoading = false
         this.changeState({current: 'ShowingResult'})
       }
       reader.readAsText(file);
     }
+  }
+
+  normalizeCoordinates(coordinates) {
+    if(!coordinates || (coordinates && !coordinates.length)) return undefined
+    let normalizedCoordinates = []
+    let minX = Math.min(...coordinates.map(x => x[0]))
+    let minY = Math.min(...coordinates.map(x => x[1]))
+    let maxX = Math.max(...coordinates.map(x => x[0]))
+    let maxY = Math.max(...coordinates.map(x => x[1]))
+    console.log('Math.min X:', minX)
+    console.log('Math.min Y:', minY)
+    console.log('Math.max X:', maxX)
+    console.log('Math.max Y:', maxY)
+    let gapX = maxX - minX
+    let gapY = maxY - minY
+    let mapCenterX = (maxX + minX) / 2
+    let mapCenterY = (maxY + minY) / 2
+    let zoomFactor = Math.min(width / gapX, height / gapY) * 0.95
+    for(let coordinate of coordinates) {
+      normalizedCoordinates.push([(coordinate[0] - mapCenterX) * zoomFactor + width / 2, - (coordinate[1] - mapCenterY) * zoomFactor + height / 2])
+    }
+    console.log('Math.min X:', Math.min(...normalizedCoordinates.map(x => x[0])))
+    console.log('Math.min Y:', Math.min(...normalizedCoordinates.map(x => x[1])))
+    console.log('Math.max X:', Math.max(...normalizedCoordinates.map(x => x[0])))
+    console.log('Math.max Y:', Math.max(...normalizedCoordinates.map(x => x[1])))
+    return normalizedCoordinates
+  }
+
+  getPath(coordinates) {
+    if(!coordinates || (coordinates && !coordinates.length)) return undefined;
+
+    // Start the path at the first coordinate
+    let pathData = 'M ' + coordinates[0][0] + ',' + coordinates[0][1];
+
+    // Loop through the coordinates and create lines to each point
+    for (let i = 1; i < coordinates.length; i++) {
+      pathData += 'L ' + coordinates[i][0] + ',' + coordinates[i][1];
+    }
+
+    return pathData;
   }
 
   render() {
