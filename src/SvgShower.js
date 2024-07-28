@@ -23,16 +23,20 @@ function SvgShower(props) {
     };
   
     return(
-        <div>
+        <div className="scaled-to-height">
             <div className="back-button" onClick={() => handleBack()}>
-                <ArrowDown className="back-image"/>
-                <p className="p-back">BACK</p>
+                <div className="horizontal-elements">
+                    <ArrowDown className="back-image"/>
+                    <p className="p-back">BACK</p>
+                </div>
+                <div className="button-primary-shorter justify-center-column" onClick={downloadSVG}>
+                    <p className="p-login p-size">GET SVG</p>
+                </div>
             </div>
-            <svg ref={svgRef} width="1000px" height="1000px">
-                <path d={props.path}/>
-            </svg>
-            <div className="button-primary justify-center-column" onClick={downloadSVG}>
-                <p className="p-login p-size">GET SVG</p>
+            <div className="bordered-div margin-div">
+                <svg ref={svgRef} className="dimention-svg">
+                    <path d={props.path}/>
+                </svg>
             </div>
         </div>
     )
