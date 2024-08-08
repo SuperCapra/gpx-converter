@@ -59,7 +59,7 @@ class Router extends React.Component{
       if(this.state.current === 'ShowingResult') {
         return (
           <div>
-            <SvgShower width={width} height={height} path={gpxInfo.path} handleBack={() => this.changeState({current: 'LoadGpx'})}/>
+            <SvgShower width={width} height={height} data={gpxInfo} path={gpxInfo.routePath} handleBack={() => this.changeState({current: 'LoadGpx'})}/>
           </div>
         )
       } else if(this.state.current === 'LoadGpx') {
@@ -106,7 +106,8 @@ class Router extends React.Component{
         }))
         gpxInfo = tracks[0]
         this.normalizeCoordinates(gpxInfo.coordinates)
-        gpxInfo['path'] = this.getPath(this.normalizeCoordinates(gpxInfo.coordinates))
+        gpxInfo['routePath'] = this.getRoutePath(this.normalizeCoordinates(gpxInfo.coordinates))
+        gpxInfo['altitudePath'] = this.getAltitudePath(this.normalizeAltitude(gpxInfo.altitudeStream))
         console.log('gpxInfo:', gpxInfo)
         isLoading = false
         this.changeState({current: 'ShowingResult'})
@@ -141,7 +142,35 @@ class Router extends React.Component{
     return normalizedCoordinates
   }
 
-  getPath(coordinates) {
+  normalizeAltitude(altitudeArray) {
+    if(!altitudeArray || (altitudeArray && !altitudeArray.length)) return undefined
+    console.log('altitudeArray:', altitudeArray)
+    let normalizedAltitude = []
+    let minY = Math.min(...altitudeArray)
+    let maxY = Math.max(...altitudeArray)
+    let minX = 0
+    let maxX = altitudeArray.length
+    console.log('minAltitude:', minY)
+    console.log('maxAltitude:', maxY)
+    console.log('Math.max X:', maxX)
+    console.log('Math.max X:', maxX)
+    let gapAltitude = maxY - minY
+    // let gapY = maxY - minY
+    let mapCenterX = (maxX + minX) / 2
+    let mapCenterY = (maxY + minY) / 2
+    let zoomFactor = Math.min(width / gapAltitude, height / maxX) * 0.95
+    for(let i = 0; i < altitudeArray.length; i++) {
+      normalizedAltitude.push([(i - mapCenterX) * zoomFactor + width / 2, - (altitudeArray[i] - mapCenterY) * zoomFactor + height / 2])
+    }
+    console.log('Math.min X:', Math.min(...normalizedAltitude.map(x => x[0])))
+    console.log('Math.min Y:', Math.min(...normalizedAltitude.map(x => x[1])))
+    console.log('Math.max X:', Math.max(...normalizedAltitude.map(x => x[0])))
+    console.log('Math.max Y:', Math.max(...normalizedAltitude.map(x => x[1])))
+    console.log('normalizedAltitude:', normalizedAltitude)
+    return normalizedAltitude
+  }
+
+  getRoutePath(coordinates) {
     if(!coordinates || (coordinates && !coordinates.length)) return undefined;
 
     // Start the path at the first coordinate
@@ -150,6 +179,20 @@ class Router extends React.Component{
     // Loop through the coordinates and create lines to each point
     for (let i = 1; i < coordinates.length; i++) {
       pathData += 'L ' + coordinates[i][0] + ',' + coordinates[i][1];
+    }
+
+    return pathData;
+  }
+
+  getAltitudePath(altritudeStream) {
+    if(!altritudeStream || (altritudeStream && !altritudeStream.length)) return undefined;
+
+    // Start the path at the first coordinate
+    let pathData = 'M ' + altritudeStream[0][0] + ',' + altritudeStream[0][1];
+
+    // Loop through the coordinates and create lines to each point
+    for (let i = 1; i < altritudeStream.length; i++) {
+      pathData += 'L ' + altritudeStream[i][0] + ',' + altritudeStream[i][1];
     }
 
     return pathData;

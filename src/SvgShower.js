@@ -1,11 +1,15 @@
 import './App.css';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {ReactComponent as ArrowDown} from './arrowDownSimplified.svg'
+import brandingPalette from './brandingPalette';
 
 function SvgShower(props) {
 
-    const {path, width, height, handleBack} = props
-    const svgRef = useRef(null);
+    let {data, path, width, height, handleBack} = props
+    const svgRef = useRef(null)
+    const [routePath,setRoutePath] = useState(data.routePath)
+    const [altitudePath,setAltitudePath] = useState(data.altitudePath)
+    const [type,setType] = useState('route')
 
     const downloadSVG = () => {
       const svgElement = svgRef.current;
@@ -21,6 +25,15 @@ function SvgShower(props) {
       downloadLink.click();
       document.body.removeChild(downloadLink);
     };
+
+    const changePath = (type) =>  {
+        console.log('data.altitudePath:', data.altitudePath)
+        console.log('data.routePath:', data.routePath)
+        console.log('path:', path)
+        console.log('type', type)
+        setType(type)
+        console.log('path:', path)
+    }
   
     return(
         <div className="scaled-to-height">
@@ -29,14 +42,23 @@ function SvgShower(props) {
                     <ArrowDown className="back-image"/>
                     <p className="p-back">BACK</p>
                 </div>
+                <div className="button-primary-shorter justify-center-column" onClick={() => changePath('route')}>
+                    <p className="p-login p-size">ROUTE</p>
+                </div>
+                <div className="button-primary-shorter justify-center-column" onClick={() => changePath('altitude')}>
+                    <p className="p-login p-size">ALTITUDE</p>
+                </div>
                 <div className="button-primary-shorter justify-center-column" onClick={downloadSVG}>
                     <p className="p-login p-size">GET SVG</p>
                 </div>
             </div>
             <div className="bordered-div margin-div">
-                <svg ref={svgRef} width={width} height={height}>
-                    <path d={path} stroke="black" strokeWidth="1" fill="none"/>
-                </svg>
+                {type === 'route' && <svg ref={svgRef} width={width} height={height}>
+                    <path d={routePath} stroke={brandingPalette.primary} strokeWidth="2" fill="none"/>
+                </svg>}
+                {type === 'altitude' && <svg ref={svgRef} width={width} height={height}>
+                    <path d={altitudePath} stroke={brandingPalette.primary} strokeWidth="2" fill="none"/>
+                </svg>}
             </div>
         </div>
     )
