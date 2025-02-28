@@ -4,17 +4,42 @@ import {ReactComponent as ArrowDown} from './arrowDownSimplified.svg'
 import brandingPalette from './brandingPalette';
 
 function SvgShower(props) {
-
     let {data, path, width, height, handleBack} = props
+
+    const styleAltitude = {
+        stroke: brandingPalette.primary,
+        strokeWidth: 2,
+        fill: brandingPalette.primary,
+        strokeLinecap: 'none',
+        strokeLinejoin: 'round'
+    }
+    const styleRoute = {
+        stroke: brandingPalette.primary,
+        strokeWidth: 2,
+        fill: 'none',
+        strokeLinecap: 'none',
+        strokeLinejoin: 'round'
+    }
     const svgRef = useRef(null)
     const [routePath,setRoutePath] = useState(data.routePath)
     const [altitudePath,setAltitudePath] = useState(data.altitudePath)
     const [type,setType] = useState('route')
+    const getClassesRouteButton = () => {
+        if(type === 'route') return 'button-primary-shorter button-secondary-color justify-center-colum'
+        else return 'button-primary-shorter justify-center-colum'
+    }
+    const getClassesAltitudeButton = () => {
+        if(type === 'altitude') return 'button-primary-shorter button-secondary-color justify-center-colum'
+        else return 'button-primary-shorter justify-center-colum'
+    }
+    const classesRouteButton = getClassesRouteButton()
+    const classesAltitudeButton = getClassesAltitudeButton()
+
 
     const downloadSVG = () => {
       const svgElement = svgRef.current;
       const serializer = new XMLSerializer();
-      const source = serializer.serializeToString(svgElement);
+      const source = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + serializer.serializeToString(svgElement);
       const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
   
@@ -27,12 +52,7 @@ function SvgShower(props) {
     };
 
     const changePath = (type) =>  {
-        console.log('data.altitudePath:', data.altitudePath)
-        console.log('data.routePath:', data.routePath)
-        console.log('path:', path)
-        console.log('type', type)
         setType(type)
-        console.log('path:', path)
     }
   
     return(
@@ -42,22 +62,22 @@ function SvgShower(props) {
                     <ArrowDown className="back-image"/>
                     <p className="p-back">BACK</p>
                 </div>
-                <div className="button-primary-shorter justify-center-column" onClick={() => changePath('route')}>
+                <div className={classesRouteButton} onClick={() => changePath('route')}>
                     <p className="p-login p-size">ROUTE</p>
                 </div>
-                <div className="button-primary-shorter justify-center-column" onClick={() => changePath('altitude')}>
+                <div className={classesAltitudeButton} onClick={() => changePath('altitude')}>
                     <p className="p-login p-size">ALTITUDE</p>
                 </div>
-                <div className="button-primary-shorter justify-center-column" onClick={downloadSVG}>
+                <div className="button-primary-shorter button-primary-color justify-center-column" onClick={downloadSVG}>
                     <p className="p-login p-size">GET SVG</p>
                 </div>
             </div>
             <div className="bordered-div margin-div">
-                {type === 'route' && <svg ref={svgRef} width={width} height={height}>
-                    <path d={routePath} stroke={brandingPalette.primary} strokeWidth="2" fill="none"/>
+                {type === 'route' && <svg ref={svgRef} width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+                    <path d={routePath} style={styleRoute}/>
                 </svg>}
-                {type === 'altitude' && <svg ref={svgRef} width={width} height={height}>
-                    <path d={altitudePath} stroke={brandingPalette.primary} strokeWidth="2" fill="none"/>
+                {type === 'altitude' && <svg ref={svgRef} width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+                    <path d={altitudePath} style={styleAltitude}/>
                 </svg>}
             </div>
         </div>

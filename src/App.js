@@ -146,7 +146,7 @@ class Router extends React.Component{
     if(!altitudeArray || (altitudeArray && !altitudeArray.length)) return undefined
     console.log('altitudeArray:', altitudeArray)
     let normalizedAltitude = []
-    let minY = Math.min(...altitudeArray)
+    let minY = Math.min(...altitudeArray, 0)
     let maxY = Math.max(...altitudeArray)
     let minX = 0
     let maxX = altitudeArray.length
@@ -158,9 +158,10 @@ class Router extends React.Component{
     // let gapY = maxY - minY
     let mapCenterX = (maxX + minX) / 2
     let mapCenterY = (maxY + minY) / 2
-    let zoomFactor = Math.min(width / gapAltitude, height / maxX) * 0.95
+    let zoomFactorX = (height / maxX) * 0.95
+    let zoomFactorY = (width / gapAltitude) * 0.8
     for(let i = 0; i < altitudeArray.length; i++) {
-      normalizedAltitude.push([(i - mapCenterX) * zoomFactor + width / 2, - (altitudeArray[i] - mapCenterY) * zoomFactor + height / 2])
+      normalizedAltitude.push([(i - mapCenterX) * zoomFactorX + width / 2, - (altitudeArray[i] - mapCenterY) * zoomFactorY + height / 2])
     }
     console.log('Math.min X:', Math.min(...normalizedAltitude.map(x => x[0])))
     console.log('Math.min Y:', Math.min(...normalizedAltitude.map(x => x[1])))
@@ -189,11 +190,19 @@ class Router extends React.Component{
 
     // Start the path at the first coordinate
     let pathData = 'M ' + altritudeStream[0][0] + ',' + altritudeStream[0][1];
+    let numberOfPoints = altritudeStream.length
+    console.log('numberOfPoints: ', numberOfPoints)
 
     // Loop through the coordinates and create lines to each point
     for (let i = 1; i < altritudeStream.length; i++) {
-      pathData += 'L ' + altritudeStream[i][0] + ',' + altritudeStream[i][1];
+      if(i % Math.floor(numberOfPoints/100) === 0) {
+        pathData += 'L ' + altritudeStream[i][0] + ',' + altritudeStream[i][1];
+      }
     }
+    pathData += 'L ' + altritudeStream[altritudeStream.length - 1][0] + ',' + altritudeStream[altritudeStream.length - 1][1]
+    pathData += 'L ' + altritudeStream[altritudeStream.length - 1][0] + ',' + height
+    pathData += 'L ' + altritudeStream[0][0] + ',' + height
+    pathData += 'L ' + altritudeStream[0][0] + ',' + altritudeStream[0][1]
 
     return pathData;
   }

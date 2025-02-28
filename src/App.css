@@ -60,8 +60,15 @@ p {
 }
 .button-primary-shorter{
   padding: 0.5vw 1vw;
-  background-color: var(--palette-primary);
   border-radius: 5px;
+}
+.button-primary-color{
+  color: var(--palette-background);
+  background-color: var(--palette-primary);
+}
+.button-secondary-color{
+  color: var(--palette-background);
+  background-color: var(--palette-secondary);
 }
 .button-primary:hover {
   cursor: pointer
